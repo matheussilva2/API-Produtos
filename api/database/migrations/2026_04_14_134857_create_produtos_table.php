@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('produtos', function (Blueprint $table) {
             $table->id();
-            $table->string('nome');
-            $table->string('sku');
+            $table->string('nome')->index('produtos_nome_index');
+            $table->string('sku')->index('produtos_sku_index');
             $table->decimal('preco', 10, 2);
-            $table->boolean('ativo')->default(true);
-            $table->foreignId('criado_por')->constrained('usuario');
+            $table->boolean('ativo')->default(true)->index('produtos_ativo_index');
+            $table->foreignId('criado_por')->constrained('usuarios');
             $table->timestamps();
+            $table->index('created_at', 'produtos_created_at_index');
         });
     }
 
