@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\ProdutoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -19,5 +20,15 @@ Route::group(['prefix' => 'produtos'], function() {
     Route::group(['middleware' => 'admin'], function() {
         Route::post('', [ProdutoController::class, 'store']);
         Route::put('/{identifier}', [ProdutoController::class, 'update']);
+    });
+});
+
+Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function() {
+    Route::group(['prefix' => 'pedidos'], function() {
+        Route::get('/', [PedidoController::class, 'index']);
+    });
+
+    Route::group(['prefix' => 'pedidos'], function() {
+        Route::get('/{id}', [PedidoController::class, 'show']);
     });
 });
