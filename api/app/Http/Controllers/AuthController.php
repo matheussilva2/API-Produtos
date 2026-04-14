@@ -18,7 +18,10 @@ class AuthController extends Controller
                 ], 401);
             }
 
-            return response()->json($token);
+            return response()->json([
+                'access_token' => $token,
+                'token_type' => 'bearer'
+            ]);
         } catch (JWTException $e) {
             return response()->json(['message' => 'Falha ao criar o token.'], 500);
         }
