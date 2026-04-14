@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AuthRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Models\Usuario;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -18,7 +19,7 @@ class AuthController extends Controller
             if(!$token = JWTAuth::attempt($credentials)) {
                 return response()->json([
                     'message' => 'E-mail ou senha inválidos.'
-                ], 401);
+                ], Response::HTTP_UNAUTHORIZED);
             }
 
             return response()->json([
@@ -26,7 +27,7 @@ class AuthController extends Controller
                 'token_type' => 'bearer'
             ]);
         } catch (JWTException $e) {
-            return response()->json(['message' => 'Falha ao criar o token.'], 500);
+            return response()->json(['message' => 'Falha ao criar o token.'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -44,7 +45,7 @@ class AuthController extends Controller
         if(!$user) {
             return response()->json([
                 'message' => 'Usuário não encontrado.'
-            ], 404);
+            ], Response::HTTP_NOT_FOUND);
         }
 
         return response()->json($user);
@@ -67,6 +68,6 @@ class AuthController extends Controller
             'usuario' => $user,
             'access_token' => $token,
             'token_type' => 'bearer'
-        ], 201);
+        ], Response::HTTP_CREATED);
     }
 }

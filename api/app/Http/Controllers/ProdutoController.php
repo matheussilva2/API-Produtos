@@ -7,6 +7,7 @@ use App\Http\Requests\ProdutoStoreRequest;
 use App\Http\Requests\ProdutoUpdateRequest;
 use App\Models\Produto;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -45,7 +46,7 @@ class ProdutoController extends Controller
         $product = Produto::where('id', $identifier)->orWhere('sku', $identifier)->first();
 
         if(!$product)
-            return response()->json([], 404);
+            return response()->json([], Response::HTTP_NOT_FOUND);
 
         return response()->json($product);
     }
@@ -67,7 +68,7 @@ class ProdutoController extends Controller
         return response()->json([
             'message' => 'Produto criado com sucesso.',
             'data' => $product
-        ], 201);
+        ], Response::HTTP_CREATED);
     }
 
     public function update(ProdutoUpdateRequest $request, string $identifier) {
@@ -76,7 +77,7 @@ class ProdutoController extends Controller
             ->first();
         
         if(!$product) {
-            return response()->json(['message' => 'Produto não encocntrado'], 404);
+            return response()->json(['message' => 'Produto não encocntrado'], Response::HTTP_NOT_FOUND);
         }
 
         $data = $request->validated();
