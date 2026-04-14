@@ -12,7 +12,7 @@ use Illuminate\Notifications\Notifiable;
 
 #[Fillable(['nome', 'email', 'senha', 'cpf', 'telefone', 'tipo'])]
 #[Hidden(['senha', 'remember_token'])]
-class User extends Authenticatable
+class Usuario extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
