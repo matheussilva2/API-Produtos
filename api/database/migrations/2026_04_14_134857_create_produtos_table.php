@@ -19,6 +19,7 @@ return new class extends Migration
             $table->decimal('preco', 10, 2);
             $table->boolean('ativo')->default(true)->index('produtos_ativo_index');
             $table->foreignId('criado_por')->constrained('usuarios');
+            $table->integer('estoque');
             $table->timestamps();
             $table->index('created_at', 'produtos_created_at_index');
         });

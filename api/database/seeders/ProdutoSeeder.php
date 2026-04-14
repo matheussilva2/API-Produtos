@@ -21,7 +21,8 @@ class ProdutoSeeder extends Seeder
                 'url_imagem' => 'https://picsum.photos/seed/TEC-MECH-001/800/800',
                 'preco' => 250,
                 'ativo' => true,
-                'criado_por' => $usuario->id
+                'criado_por' => $usuario->id,
+                'estoque' => 150
             ],
             [
                 'nome' => 'Mouse Gamer 16000 DPI',
@@ -29,7 +30,8 @@ class ProdutoSeeder extends Seeder
                 'url_imagem' => 'https://picsum.photos/seed/MSE-GAMER-002/800/800',
                 'preco' => 180.50,
                 'ativo' => true,
-                'criado_por' => $usuario->id
+                'criado_por' => $usuario->id,
+                'estoque' => 6,
             ],
             [
                 'nome' => 'Monitor 24" Full HD',
@@ -37,7 +39,8 @@ class ProdutoSeeder extends Seeder
                 'url_imagem' => 'https://picsum.photos/seed/MON-24-003/800/800',
                 'preco' => 899.90,
                 'ativo' => false,
-                'criado_por' => $usuario->id
+                'criado_por' => $usuario->id,
+                'estoque' => 0
             ],
         ]);
     }

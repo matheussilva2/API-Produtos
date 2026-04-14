@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['nome', 'imagem_produto', 'sku', 'preco', 'ativo', 'criado_por'])]
+#[Fillable(['nome', 'imagem_produto', 'sku', 'preco', 'ativo', 'criado_por', 'estoque'])]
 
 class Produto extends Model
 {
