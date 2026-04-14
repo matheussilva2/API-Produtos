@@ -14,4 +14,5 @@ Route::group(['prefix' => 'auth'], function() {
 
 Route::group(['prefix' => 'produtos'], function() {
     Route::get('', [ProdutoController::class, 'index']);
+    Route::get('/{identifier}', [ProdutoController::class, 'show']);
 });

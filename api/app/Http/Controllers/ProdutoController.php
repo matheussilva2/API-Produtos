@@ -6,6 +6,8 @@ use App\Http\Requests\ProdutoIndexRequest;
 use App\Models\Produto;
 use Illuminate\Http\Request;
 
+use function PHPUnit\Framework\isNumeric;
+
 class ProdutoController extends Controller
 {
     public function index(ProdutoIndexRequest $request) {
@@ -35,7 +37,16 @@ class ProdutoController extends Controller
         return response()->json($produtos);
     }
 
-    public function show(Produto $id) {
-        return;
+    public function show(string $identifier) {
+        if(is_numeric($identifier)) {
+            $product = Produto::find($identifier);
+        } else {
+            $product = Produto::where('sku', strtoupper($identifier))->first();
+        }
+
+        if(!$product)
+            return response()->json([], 404);
+
+        return response()->json($product);
     }
 }

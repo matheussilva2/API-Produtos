@@ -70,3 +70,29 @@ test('Parâmetro per_page inválido', function() {
     $response->assertStatus(422)
         ->assertJsonValidationErrors(['per_page']);
 });
+
+test('Retorna produto se procurar por ID ou SKU', function() {
+    Produto::factory()->create([
+        'id' => 10,
+        'sku' => 'TESTE-1020'
+    ]);
+
+    $this->getJson('/api/produtos/10')->assertStatus(200);
+    $this->getJson('/api/produtos/TESTE-1020')->assertStatus(200);
+});
+
+test('Retorna 404 se não houver produtos com ID fornecido', function() {
+    Produto::factory()->create([
+        'id' => 10
+    ]);
+
+    $this->getJson('/api/produtos/11')->assertStatus(404);
+});
+
+test('Retorna 404 se não houver produtos com SKU fornecido', function() {
+    Produto::factory()->create([
+        'sku' => 'TESTE-1020'
+    ]);
+
+    $this->getJson('/api/produtos/TESTE')->assertStatus(404);
+});
