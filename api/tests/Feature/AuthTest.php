@@ -7,6 +7,48 @@ use Illuminate\Support\Facades\Hash;
 
 uses(RefreshDatabase::class);
 
+test('Registro do usuário com sucesso.', function() {
+    $response = $this->postJson('/api/auth/register', [
+        'nome' => 'Registro Teste',
+        'email' => 'registro@teste.com',
+        'password' => 'senha123',
+        'password_confirmation' => 'senha123',
+        'cpf' => '11122233344'
+    ]);
+
+    $response->assertStatus(201)->assertJsonStructure(['access_token', 'usuario']);
+
+    $this->assertDatabaseHas('usuarios', ['email' => 'registro@teste.com']);
+});
+
+test('Registro com e-mail duplicado rejeitado.', function() {
+    Usuario::factory()->create(['email' => 'existente@teste.com']);
+
+    $response = $this->postJson('/api/auth/register', [
+        'nome' => 'Teste',
+        'email' => 'existente@teste.com',
+        'password' => 'senha123',
+        'password_confirmation' => 'senha123',
+        'cpf' => '12345678910'
+    ]);
+
+    $response->assertStatus(422)->assertJsonValidationErrors(['email']);
+});
+
+test('Registro com CPF duplicado rejeitado.', function() {
+    Usuario::factory()->create(['cpf' => '12345678910']);
+
+    $response = $this->postJson('/api/auth/register', [
+        'nome' => 'Teste',
+        'email' => 'teste@teste.com',
+        'password' => 'senha123',
+        'password_confirmation' => 'senha123',
+        'cpf' => '12345678910'
+    ]);
+
+    $response->assertStatus(422)->assertJsonValidationErrors(['cpf']);
+});
+
 test('Login com sucesso e retorno do token', function() {
     Usuario::factory()->create([
         'email' => 'teste@teste.com',

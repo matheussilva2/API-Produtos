@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AuthRequest;
+use App\Http\Requests\RegisterRequest;
+use App\Models\Usuario;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -45,5 +48,25 @@ class AuthController extends Controller
         }
 
         return response()->json($user);
+    }
+
+    public function register(RegisterRequest $request) {
+        $user = Usuario::create([
+            'nome' => $request->nome,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'cpf' => $request->cpf,
+            'tipo' => 'cliente',
+            'telefone' => $request->telefone
+        ]);
+
+        $token = Auth::login($user);
+
+        return response()->json([
+            'message' => 'Usuário registrado com sucesso!',
+            'usuario' => $user,
+            'access_token' => $token,
+            'token_type' => 'bearer'
+        ], 201);
     }
 }
