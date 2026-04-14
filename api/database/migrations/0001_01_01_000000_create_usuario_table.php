@@ -14,14 +14,15 @@ return new class extends Migration
         Schema::create('usuarios', function (Blueprint $table) {
             $table->id();
             $table->string('nome');
-            $table->string('email')->unique();
+            $table->string('email')->unique('usuarios_email_index');
             $table->string('password');
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('cpf');
+            $table->string('cpf')->unique('usuarios_cpf_index');
             $table->string('telefone')->nullable();
-            $table->enum('tipo', ['cliente', 'admin'])->default('client');
+            $table->enum('tipo', ['cliente', 'admin'])->default('cliente');
             $table->rememberToken();
             $table->timestamps();
+            $table->index('created_at', 'usuarios_created_at_index');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
