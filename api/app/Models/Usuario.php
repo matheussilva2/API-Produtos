@@ -12,7 +12,7 @@ use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 #[Fillable(['nome', 'email', 'senha', 'cpf', 'telefone', 'tipo'])]
-#[Hidden(['senha', 'remember_token'])]
+#[Hidden(['password', 'remember_token'])]
 class Usuario extends Authenticatable implements JWTSubject
 {
     /** @use HasFactory<UserFactory> */
