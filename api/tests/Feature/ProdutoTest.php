@@ -1,7 +1,12 @@
 <?php
 
 use App\Models\Produto;
+use App\Models\Usuario;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\Response;
 
 uses(RefreshDatabase::class);
 
@@ -95,4 +100,133 @@ test('Retorna 404 se não houver produtos com SKU fornecido', function() {
     ]);
 
     $this->getJson('/api/produtos/TESTE')->assertStatus(404);
+});
+
+test('Falha ao criar produto se o usuário não for admin', function() {
+    $user = Usuario::factory()->create([
+        'tipo' => 'cliente'
+    ]);
+
+    $token = Auth::login($user);
+
+    $response = $this->withToken($token)->postJson('/api/produtos', []);
+
+    $response->assertStatus(Response::HTTP_FORBIDDEN);
+});
+
+test('Criar produto com imagem via upload', function() {
+    $admin = Usuario::factory()->create([
+        'tipo' => 'admin'
+    ]);
+
+    $token = Auth::login($admin);
+
+    Storage::fake('public');
+
+    $image = UploadedFile::fake()->image('teste.jpg');
+
+    $product_data = [
+        'nome' => 'iPhone 15 Pro',
+        'sku' => 'iph-15-pro',
+        'preco' => 8999.90,
+        'estoque' => 10,
+        'imagem' => $image
+    ];
+
+    $response = $this->withToken($token)->postJson('/api/produtos', $product_data);
+
+    $response->assertStatus(201)
+        ->assertJsonPath('data.sku', 'IPH-15-PRO');
+    
+    $product = Produto::first();
+    Storage::disk('public')->assertExists($product->url_imagem);
+});
+
+test('Falha ao criar produto com imagem inválida', function() {
+    $admin = Usuario::factory()->create([
+        'tipo' => 'admin'
+    ]);
+
+    $token = Auth::login($admin);
+
+    Storage::fake('public');
+
+    $image = UploadedFile::fake()->create('document.pdf', 1024);
+
+    $product_data = [
+        'nome' => 'iPhone 15 Pro',
+        'sku' => 'iph-15-pro',
+        'preco' => 8999.90,
+        'estoque' => 10,
+        'imagem' => $image
+    ];
+
+    $response = $this->withToken($token)->postJson('/api/produtos', $product_data);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors(['imagem']);
+});
+
+test('Falha criar produto com imagem muito pesada (> 2MB)', function() {
+    $admin = Usuario::factory()->create([
+        'tipo' => 'admin'
+    ]);
+
+    $token = Auth::login($admin);
+
+    Storage::fake('public');
+
+    $image = UploadedFile::fake()->create('imagem.png', 3072, 'image/png'); //3MB
+
+    $product_data = [
+        'nome' => 'iPhone 15 Pro',
+        'sku' => 'iph-15-pro',
+        'preco' => 8999.90,
+        'estoque' => 10,
+        'imagem' => $image
+    ];
+
+    $response = $this->withToken($token)->postJson('/api/produtos', $product_data);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors(['imagem']);
+});
+
+test('Falha ao atualizar produto se o usuário não for admin', function() {
+    $user = Usuario::factory()->create([
+        'tipo' => 'cliente'
+    ]);
+
+    $token = Auth::login($user);
+
+    $response = $this->withToken($token)->putJson('/api/produtos/1', []);
+
+    $response->assertStatus(Response::HTTP_FORBIDDEN);
+});
+
+test('Atualização de produto com sucesso', function() {
+    Storage::fake('public');
+
+    $admin = Usuario::factory()->create([
+        'tipo' => 'admin'
+    ]);
+        
+    $this->actingAs($admin, 'sanctum');
+    $product = Produto::factory()->create([
+        'criado_por' => $admin->id,
+        'url_imagem' => 'products/antiga.jpg'
+    ]);
+
+    $new_image = UploadedFile::fake()->image('nova_imagem.jpg');
+    $response = $this->withToken($admin)->putJson("/api/produtos/{$product->id}", [
+        'nome' => 'Produto Atualizado',
+        'imagem' => $new_image
+    ]);
+
+    $response->assertStatus(200);
+
+    Storage::disk('public')->assertMissing('products/antiga.jpg');
+    Storage::disk('public')->assertExists($product->refresh()->url_imagem);
+
+    $response->assertJsonPath('data.nome', 'Produto Atualizado');
 });
