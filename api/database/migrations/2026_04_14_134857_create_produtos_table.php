@@ -13,7 +13,12 @@ return new class extends Migration
     {
         Schema::create('produtos', function (Blueprint $table) {
             $table->id();
-            $table->string('nome')->fullText('produtos_nome_index');
+            $table->string('nome')->index();
+
+            if(config('database.default' !== 'sqlite')) {
+                $table->fullText('produtos_nome_index');
+            }
+            
             $table->string('url_imagem');
             $table->string('sku')->index('produtos_sku_index');
             $table->decimal('preco', 10, 2);
