@@ -13,6 +13,10 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
+    /**
+    * Fazer login e receber token
+    * 
+    */
     public function login(AuthRequest $request) {
         $credentials = $request->only(['email', 'password']);
         try {
@@ -23,14 +27,20 @@ class AuthController extends Controller
             }
 
             return response()->json([
-                'access_token' => $token,
-                'token_type' => 'bearer'
+                'data' => [
+                    'access_token' => $token,
+                    'token_type' => 'bearer'
+                ]
             ]);
         } catch (JWTException $e) {
             return response()->json(['message' => 'Falha ao criar o token.'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
+    /**
+    * Deslogar conta e invalidar token
+    * 
+    */
     public function logout() {
         JWTAuth::invalidate(JWTAuth::getToken());
 
@@ -39,6 +49,11 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+    * Dados do usuário logado
+    * 
+    * @response array{ data: \App\Models\Usuario}
+    */
     public function me() {
         $user = Auth::user();
 
@@ -48,9 +63,15 @@ class AuthController extends Controller
             ], Response::HTTP_NOT_FOUND);
         }
 
-        return response()->json($user);
+        return response()->json([
+            'data' => $user
+        ]);
     }
 
+    /**
+    * Registrar novo usuário
+    * 
+    */
     public function register(RegisterRequest $request) {
         $user = Usuario::create([
             'nome' => $request->nome,
@@ -65,9 +86,11 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Usuário registrado com sucesso!',
-            'usuario' => $user,
-            'access_token' => $token,
-            'token_type' => 'bearer'
+            'data' => [
+                'usuario' => $user,
+                'access_token' => $token,
+                'token_type' => 'bearer'
+            ]
         ], Response::HTTP_CREATED);
     }
 }

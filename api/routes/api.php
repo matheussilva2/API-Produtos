@@ -23,10 +23,18 @@ Route::group(['prefix' => 'produtos'], function() {
     });
 });
 
-Route::group(['prefix' => 'pedidos', 'middleware' => 'admin'], function() {
-    Route::get('/', [PedidoController::class, 'index']);
-    Route::get('/{id}', [PedidoController::class, 'show']);
-    Route::put('/{id}/status', [PedidoController::class, 'update']);
+Route::group(['prefix' => 'pedidos', 'middleware' => 'auth'], function() {
+    Route::group(['prefix' => 'cliente'], function() {
+        Route::get('/', [PedidoController::class, 'indexCustomerOrders']);
+        Route::get('/{id}', [PedidoController::class, 'showCustomerOrder']);
+    });
+    
+    Route::group(['middleware' => 'admin'], function() {
+        Route::get('/', [PedidoController::class, 'index']);
+        Route::get('/{id}', [PedidoController::class, 'show']);
+        Route::put('/{id}/status', [PedidoController::class, 'update']);
+    });
+
 });
 
 Route::middleware('auth')->post('/pedidos', [PedidoController::class, 'store']);

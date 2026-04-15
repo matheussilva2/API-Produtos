@@ -105,3 +105,47 @@ test('Devolução do estoque com sucesso quando o pedido for cancelado', functio
     expect($product->fresh()->estoque)->toBe(10);
     expect($order->fresh()->status)->toBe(OrderStatus::CANCELADO->value);
 });
+
+test('Exibir pedidos do cliente corretamente', function() {
+    $customerA = Usuario::factory()->create();
+    $customerB = Usuario::factory()->create();
+    
+    Pedido::factory()->count(3)->create(['usuario_id' => $customerA->id]);
+    Pedido::factory()->count(2)->create(['usuario_id' => $customerB->id]);
+
+    $response = $this->actingAs($customerA)
+        ->getJson('/api/pedidos/cliente');
+
+    $response->assertStatus(200)
+        ->assertJsonCount(3, 'data');
+
+    foreach($response->json('data') as $order) {
+        $this->assertEquals($customerA->id, $order['usuario_id']);
+    }
+});
+
+test('Sucesso ao cliente acessar pedido.', function() {
+    $customer = Usuario::factory()->create(['tipo' => 'cliente']);
+    $order = Pedido::factory()->create([
+        'usuario_id' => $customer->id
+    ]);
+
+    $response = $this->actingAs($customer, 'sanctum')
+        ->getJson("/api/pedidos/cliente/{$order->id}");
+
+    $response->assertStatus(200);
+});
+
+test('Falha ao cliente acessar pedido de outro cliente.', function() {
+    $customerA = Usuario::factory()->create(['id' => 1,'tipo' => 'cliente']);
+    $customerB = Usuario::factory()->create(['id' => 2, 'tipo' => 'cliente']);
+    $order = Pedido::factory()->create([
+        'id' => 1,
+        'usuario_id' => $customerA->id
+    ]);
+
+    $response = $this->actingAs($customerB, 'sanctum')
+        ->getJson("/api/pedidos/cliente/{$order->id}");
+
+    $response->assertStatus(401);
+});

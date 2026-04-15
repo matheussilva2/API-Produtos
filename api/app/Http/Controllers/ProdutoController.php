@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\Storage;
 
 class ProdutoController extends Controller
 {
+    /**
+    * Retornar lista de produtos
+    * 
+    */
     public function index(ProdutoIndexRequest $request) {
         $query = Produto::query();
 
@@ -39,15 +43,25 @@ class ProdutoController extends Controller
         return response()->json($produtos);
     }
 
+    /**
+    * Mostrar dados de um produto
+    * 
+    */
     public function show(string $identifier) {
         $product = Produto::where('id', $identifier)->orWhere('sku', $identifier)->first();
 
         if(!$product)
             return response()->json([], Response::HTTP_NOT_FOUND);
 
-        return response()->json($product);
+        return response()->json([
+            'data' => $product
+        ]);
     }
 
+    /**
+    * Criar novo produto
+    * 
+    */
     public function store(ProdutoStoreRequest $request) {
         $data = $request->validated();
 
@@ -68,6 +82,10 @@ class ProdutoController extends Controller
         ], Response::HTTP_CREATED);
     }
 
+    /**
+    * Atualizar produto
+    * 
+    */
     public function update(ProdutoUpdateRequest $request, string $identifier) {
         $product = Produto::where('id', $identifier)
             ->orWhere('sku', strtoupper($identifier))

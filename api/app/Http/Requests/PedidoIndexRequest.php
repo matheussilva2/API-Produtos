@@ -25,7 +25,7 @@ class PedidoIndexRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => ['nullable', Rule::in(OrderStatus::values()),],
+            'status' => ['nullable', Rule::enum(OrderStatus::class),],
             'cidade_entrega' => 'nullable|string',
             'estado_entrega' => 'nullable|string',
             'per_page' => 'nullable|integer|min:1|max:100',

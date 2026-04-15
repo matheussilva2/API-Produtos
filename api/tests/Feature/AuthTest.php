@@ -16,7 +16,7 @@ test('Registro do usuário com sucesso.', function() {
         'cpf' => '11122233344'
     ]);
 
-    $response->assertStatus(201)->assertJsonStructure(['access_token', 'usuario']);
+    $response->assertStatus(201)->assertJsonStructure(['data' => ['access_token', 'usuario']]);
 
     $this->assertDatabaseHas('usuarios', ['email' => 'registro@teste.com']);
 });
@@ -61,7 +61,7 @@ test('Login com sucesso e retorno do token', function() {
     ]);
 
     $response->assertStatus(200)
-    ->assertJsonStructure(['access_token', 'token_type']);
+    ->assertJsonStructure(['data' => ['access_token', 'token_type']]);
 });
 
 test('Falha ao logar com senha incorreta', function() {
@@ -85,7 +85,7 @@ test('Retornar dados do usuário logado', function() {
 
     $response = $this->withToken($token)->getJson('/api/auth/me');
 
-    $response->assertStatus(200)->assertJsonPath('email', $user->email);
+    $response->assertStatus(200)->assertJsonPath('data.email', $user->email);
 });
 
 test('Invalidação do token quando fazer logout', function() {

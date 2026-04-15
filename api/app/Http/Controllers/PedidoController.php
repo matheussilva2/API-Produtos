@@ -15,6 +15,10 @@ use Illuminate\Support\Facades\DB;
 
 class PedidoController extends Controller
 {
+    /**
+    * Retornar lista de pedidos
+    * 
+    */
     public function index(PedidoIndexRequest $request) {
         $query = Pedido::query();
 
@@ -35,6 +39,11 @@ class PedidoController extends Controller
         return response()->json($orders);
     }
 
+    /**
+    * Retornar dados de um pedido
+    * 
+    * @response array{message: string, data: \App\Models\Pedido}
+    */
     public function show($id) {
         $order = Pedido::find($id);
 
@@ -46,6 +55,10 @@ class PedidoController extends Controller
         ]);
     }
 
+    /**
+    * Retornar lista de pedidos do cliente logado
+    * 
+    */
     public function indexCustomerOrders(PedidoIndexRequest $request) {
         $user = Auth::user();
 
@@ -63,18 +76,31 @@ class PedidoController extends Controller
             $orders->where('estado_entrega', $request->estado_entrega);
         }
 
-        $orders->orderBy('created_at', 'desc')->paginate($request->per_page?$request->per_page:10);
-
+        $orders = $orders->latest()
+            ->paginate($request->per_page?$request->per_page:10);
+        
         return response()->json($orders);
     }
 
-    public function showCustomerOrder(Pedido $order) {
+    /**
+    * Retornar dados de um pedido do cliente logado
+    * 
+    * @response array{message: string, data: \App\Models\Pedido}
+    */
+    public function showCustomerOrder(string $id) {
         $user = Auth::user();
+        $order = Pedido::find($id);
 
-        if($user->id !== $order->id) {
+        if(!$order) {
+            return response()->json([
+                'message' => 'Pedido não encontrado.'
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        if($user->id !== $order->usuario_id) {
             return response()->json([
                 'message' => 'Sem autorização.'
-            ], Response::HTTP_FORBIDDEN);
+            ], Response::HTTP_UNAUTHORIZED);
         }
 
         return response()->json([
@@ -82,6 +108,11 @@ class PedidoController extends Controller
         ]);
     }
 
+    /**
+    * Cria novo pedido
+    * 
+    * @response array{message: 'Pedido realizado com sucesso!', data: \App\Models\Pedido}
+    */
     public function store(PedidoStoreRequest $request) {
         return DB::transaction(function () use($request){
             $user = Auth::user();
@@ -105,7 +136,7 @@ class PedidoController extends Controller
                 }
 
                 $subTotal = $product->preco * $item['quantidade'];
-                $totalOrder = $subTotal;
+                $totalOrder += $subTotal;
 
                 PedidoItem::create([
                     'pedido_id' => $order->id,
@@ -128,7 +159,12 @@ class PedidoController extends Controller
             ], Response::HTTP_CREATED);
         });
     }
-
+    
+    /**
+    * Atualiza o status de um pedido
+    * 
+    * @response array{message: string, data: \App\Models\Pedido}
+    */
     public function update(PedidoUpdateStatusRequest $request, string $id) {
         $order = Pedido::find($id);
 

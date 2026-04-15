@@ -25,7 +25,7 @@ class PedidoUpdateStatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => ['required', Rule::in(OrderStatus::values())]
+            'status' => ['required', Rule::enum(OrderStatus::class)]
         ];
     }
 
