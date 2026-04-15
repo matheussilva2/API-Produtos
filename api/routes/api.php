@@ -23,15 +23,10 @@ Route::group(['prefix' => 'produtos'], function() {
     });
 });
 
-Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function() {
-    Route::group(['prefix' => 'pedidos'], function() {
-        Route::get('/', [PedidoController::class, 'index']);
-    });
-
-    Route::group(['prefix' => 'pedidos'], function() {
-        Route::get('/{id}', [PedidoController::class, 'show']);
-        Route::put('/{id}/status', [PedidoController::class, 'update']);
-    });
+Route::group(['prefix' => 'pedidos', 'middleware' => 'admin'], function() {
+    Route::get('/', [PedidoController::class, 'index']);
+    Route::get('/{id}', [PedidoController::class, 'show']);
+    Route::put('/{id}/status', [PedidoController::class, 'update']);
 });
 
 Route::middleware('auth')->post('/pedidos', [PedidoController::class, 'store']);
