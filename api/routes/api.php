@@ -30,6 +30,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function() {
 
     Route::group(['prefix' => 'pedidos'], function() {
         Route::get('/{id}', [PedidoController::class, 'show']);
+        Route::put('/{id}/status', [PedidoController::class, 'update']);
     });
 });
 

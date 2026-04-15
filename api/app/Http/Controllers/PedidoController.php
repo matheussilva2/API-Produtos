@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PedidoIndexRequest;
 use App\Http\Requests\PedidoStoreRequest;
+use App\Http\Requests\PedidoUpdateStatusRequest;
 use App\Models\Pedido;
 use App\Models\PedidoItem;
 use App\Models\Produto;
@@ -127,5 +128,22 @@ class PedidoController extends Controller
                 'data' => $order->load('items.produto')
             ], Response::HTTP_CREATED);
         });
+    }
+
+    public function update(PedidoUpdateStatusRequest $response, Pedido $order) {
+        if(in_array($order->status, ['PAGO', 'CANCELADO'])) {
+            return response()->json([
+                'message' => "O status do pedido está como {$order->status} e não pode ser alterado."
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $order->update([
+            'status' => $response->status
+        ]);
+
+        return response()->json([
+            'message' => 'Status do pedido atualizado com sucesso.',
+            'data' => $order
+        ]);
     }
 }
