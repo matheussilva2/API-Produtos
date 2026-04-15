@@ -94,6 +94,7 @@ class PedidoController extends Controller
                 'logradouro_entrega' => $request->logradouro_entrega,
                 'cidade_entrega' => $request->cidade_entrega,
                 'estado_entrega' => $request->estado_entrega,
+                'cep_entrega' => $request->cep_entrega,
                 'valor_frete' => $shippingValue,
                 'total' => 0
             ]);

@@ -19,6 +19,7 @@ test('Realizar pedido com sucesso e reduzir estoque', function() {
         'logradouro_entrega' => 'Avenida Teste, 15',
         'cidade_entrega' => 'Maceió',
         'estado_entrega' => 'AL',
+        'cep_entrega' => '57063240',
         'itens' => [
             [
                 'produto_id' => $product->id,
@@ -49,6 +50,7 @@ test('Rollback aconteceu quando estoque foi insuficiente', function() {
         'logradouro_entrega' => 'Avenida Teste',
         'cidade_entrega' => 'Maceió',
         'estado_entrega' => 'AL',
+        'cep_entrega' => '57063240',
         'itens' => [
             ['produto_id' => $product->id, 'quantidade' => 5]
         ]

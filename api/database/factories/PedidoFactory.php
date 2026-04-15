@@ -26,6 +26,7 @@ class PedidoFactory extends Factory
             'logradouro_entrega' => fake()->streetAddress() . ', 22',
             'cidade_entrega' => fake()->city(),
             'estado_entrega' => fake()->stateAbbr(),
+            'cep_entrega' => '57063240',
 
             'valor_frete' => fake()->randomFloat(2, 10, 50),
             'total' => fake()->randomFloat(2, 100, 1000)

@@ -36,6 +36,7 @@ class PedidoItemSeeder extends Seeder
                     'logradouro_entrega' => 'Avenida Teste, ' . rand(1,100),
                     'cidade_entrega' => 'Maceió',
                     'estado_entrega' => 'AL',
+                    'cep_entrega' => '57063240',
                     'valor_frete' => ShippingService::calculate('AL'),
                     'total' => 0
                 ]);

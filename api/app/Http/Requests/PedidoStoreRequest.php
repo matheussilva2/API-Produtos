@@ -18,6 +18,7 @@ class PedidoStoreRequest extends FormRequest
             'logradouro_entrega' => 'required|string',
             'cidade_entrega' => 'required|string',
             'estado_entrega' => 'required|string|size:2',
+            'cep_entrega' => 'required|string|size:8',
             'itens' => 'required|array|min:1',
             'itens.*.produto_id' => 'required|exists:produtos,id',
             'itens.*.quantidade' => 'required|integer|min:1'
@@ -31,6 +32,8 @@ class PedidoStoreRequest extends FormRequest
             'cidade_entrega.required' => 'A cidade para entrega é obrigatória.',
             'estado_entrega.required' => 'O estado para entrega é obrigatório.',
             'estado_entrega.size' => 'O estado para entrega deve ser uma sigla. Ex.: "AL"',
+            'cep_entrega.required' => 'O CEP é obrigatório.',
+            'cep_entrega.size' => 'O CEP deve ter 8 dígitos (somente números).',
 
             'itens.required' => 'Informe pelo menos um produto para criar o pedido.',
             'itens.*.produto_id.required' => 'O ID do produto é obrigatório.',

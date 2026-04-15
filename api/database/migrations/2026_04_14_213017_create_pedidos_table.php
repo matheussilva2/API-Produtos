@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('logradouro_entrega');
             $table->string('cidade_entrega');
             $table->string('estado_entrega');
+            $table->string('cep_entrega');
             
             $table->decimal('valor_frete', 10, 2);
             $table->decimal('total', 10, 2);
