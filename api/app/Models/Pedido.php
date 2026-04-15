@@ -11,6 +11,10 @@ class Pedido extends Model
 {
     use HasFactory;
 
+    public function items()  {
+        return $this->hasMany(PedidoItem::class, 'pedido_id');
+    }
+
     protected function casts(): array {
         return [
             'valor_frete' => 'decimal:2',
