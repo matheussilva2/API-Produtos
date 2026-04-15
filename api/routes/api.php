@@ -32,3 +32,5 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function() {
         Route::get('/{id}', [PedidoController::class, 'show']);
     });
 });
+
+Route::middleware('auth')->post('/pedidos', [PedidoController::class, 'store']);
