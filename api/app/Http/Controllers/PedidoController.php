@@ -3,9 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PedidoIndexRequest;
+use App\Http\Requests\PedidoStoreRequest;
 use App\Models\Pedido;
+use App\Models\PedidoItem;
+use App\Models\Produto;
+use App\Services\ShippingService;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class PedidoController extends Controller
 {
@@ -29,7 +34,18 @@ class PedidoController extends Controller
         return response()->json($orders);
     }
 
-    public function customerOrders(PedidoIndexRequest $request) {
+    public function show($id) {
+        $order = Pedido::find($id);
+
+        if(!$order)
+            return response()->json(['message' => 'Pedido não encontrado.'], Response::HTTP_NOT_FOUND);
+
+        return response()->json([
+            'data' => $order
+        ]);
+    }
+
+    public function indexCustomerOrders(PedidoIndexRequest $request) {
         $user = Auth::user();
 
         $orders = Pedido::where('usuario_id', $user->id);
@@ -51,17 +67,6 @@ class PedidoController extends Controller
         return response()->json($orders);
     }
 
-    public function show($id) {
-        $order = Pedido::find($id);
-
-        if(!$order)
-            return response()->json(['message' => 'Pedido não encontrado.'], Response::HTTP_NOT_FOUND);
-
-        return response()->json([
-            'data' => $order
-        ]);
-    }
-
     public function showCustomerOrder(Pedido $order) {
         $user = Auth::user();
 
@@ -74,5 +79,53 @@ class PedidoController extends Controller
         return response()->json([
             'data' => $order
         ]);
+    }
+
+    public function store(PedidoStoreRequest $request) {
+        return DB::transaction(function () use($request){
+            $user = Auth::user();
+            $totalOrder = 0;
+            $shippingValue = ShippingService::calculate($request->estado_entrega);
+
+            $order = Pedido::create([
+                'usuario_id' => $user->id,
+                'status' => 'CRIADO',
+                'logradouro_entrega' => $request->logradouro_entrega,
+                'cidade_entrega' => $request->cidade_entrega,
+                'estado_entrega' => $request->estado_entrega,
+                'valor_frete' => $shippingValue,
+                'total' => 0
+            ]);
+
+            foreach($request->itens as $item) {
+                $product = Produto::lockForUpdate()->find($item['produto_id']);
+
+                if($product->estoque < $item['quantidade']) {
+                    throw new \Exception("Estoque insuficiente para o produto [$product->sku] {$product->nome}");
+                }
+
+                $subTotal = $product->preco * $item['quantidade'];
+                $totalOrder = $subTotal;
+
+                PedidoItem::create([
+                    'pedido_id' => $order->id,
+                    'produto_id' => $product->id,
+                    'quantidade' => $item['quantidade'],
+                    'preco_unitario' => $product->preco,
+                    'sub_total' => $subTotal
+                ]);
+
+                $product->decrement('estoque', $item['quantidade']);
+            }
+
+            $order->update([
+                'total' => $totalOrder + $shippingValue
+            ]);
+
+            return response()->json([
+                'message' => 'Pedido realizado com sucesso!',
+                'data' => $order->load('items.produto')
+            ], Response::HTTP_CREATED);
+        });
     }
 }
