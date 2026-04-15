@@ -130,7 +130,14 @@ class PedidoController extends Controller
         });
     }
 
-    public function update(PedidoUpdateStatusRequest $response, Pedido $order) {
+    public function update(PedidoUpdateStatusRequest $response, string $id) {
+        $order = Pedido::find($id);
+
+        if(!$order)
+            return response()->json([
+                'message' => 'Pedido não encontrado.'
+            ], Response::HTTP_NOT_FOUND);
+
         if(in_array($order->status, ['PAGO', 'CANCELADO'])) {
             return response()->json([
                 'message' => "O status do pedido está como {$order->status} e não pode ser alterado."
