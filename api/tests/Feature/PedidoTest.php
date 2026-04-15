@@ -39,3 +39,48 @@ test('Cliente não pode listar todos os pedidos', function() {
         ->getJson('/api/admin/pedidos')
         ->assertStatus(Response::HTTP_FORBIDDEN);
 });
+
+test('Falha ao atualizar status de pedido pago', function() {
+    $admin = Usuario::factory()->create(['tipo' => 'admin']);
+    $order = Pedido::factory()->create(['status' => 'PAGO']);
+
+    $response = $this->actingAs($admin, 'sanctum')
+        ->putJson("/api/pedidos/{$order->id}/status", [
+            'status' => 'CANCELADO'
+        ]);
+
+    $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
+        ->assertJsonPath('message', "O status do pedido está como {$order->status} e não pode ser alterado.");
+
+    $this->assertEquals('PAGO', $order->fresh()->status);
+});
+
+test('Falha ao atualizar status de pedido cancelado', function() {
+    $admin = Usuario::factory()->create(['tipo' => 'admin']);
+    $order = Pedido::factory()->create(['status' => 'CANCELADO']);
+
+    $response = $this->actingAs($admin, 'sanctum')
+        ->putJson("/api/pedidos/{$order->id}/status", [
+            'status' => 'PAGO'
+        ]);
+
+    $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
+        ->assertJsonPath('message', "O status do pedido está como {$order->status} e não pode ser alterado.");
+
+    $this->assertEquals('CANCELADO', $order->fresh()->status);
+});
+
+test('Sucesso ao alterar status do produto de CRIADO para PAGO', function() {
+    $admin = Usuario::factory()->create(['tipo' => 'admin']);
+    $order = Pedido::factory()->create(['status' => 'CRIADO']);
+
+    $response = $this->actingAs($admin, 'sanctum')
+        ->putJson("/api/pedidos/{$order->id}/status", [
+            'status' => 'PAGO'
+        ]);
+
+    $response->assertStatus(Response::HTTP_OK)
+        ->assertJsonPath('message', "Status do pedido atualizado com sucesso.");
+
+    $this->assertEquals('PAGO', $order->fresh()->status);
+});
