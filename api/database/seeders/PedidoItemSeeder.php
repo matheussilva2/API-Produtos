@@ -6,8 +6,6 @@ use App\Models\Pedido;
 use App\Models\PedidoItem;
 use App\Models\Produto;
 use App\Models\Usuario;
-use App\Services\ShippingService;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class PedidoItemSeeder extends Seeder
@@ -37,7 +35,6 @@ class PedidoItemSeeder extends Seeder
                     'cidade_entrega' => 'Maceió',
                     'estado_entrega' => 'AL',
                     'cep_entrega' => '57063240',
-                    'valor_frete' => ShippingService::calculate('AL'),
                     'total' => 0
                 ]);
 
@@ -60,7 +57,7 @@ class PedidoItemSeeder extends Seeder
                 }
 
                 $order->update([
-                    'total' => $totalItemsPrice + $order->valor_frete
+                    'total' => $totalItemsPrice
                 ]);
             }
         }

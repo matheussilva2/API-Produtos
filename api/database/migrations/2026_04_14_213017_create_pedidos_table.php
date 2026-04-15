@@ -22,7 +22,6 @@ return new class extends Migration
             $table->string('estado_entrega');
             $table->string('cep_entrega');
             
-            $table->decimal('valor_frete', 10, 2);
             $table->decimal('total', 10, 2);
 
             $table->timestamps();

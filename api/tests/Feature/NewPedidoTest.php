@@ -32,7 +32,7 @@ test('Realizar pedido com sucesso e reduzir estoque', function() {
     $response->assertStatus(Response::HTTP_CREATED);
     $response->assertJsonPath('message', 'Pedido realizado com sucesso!');
 
-    $this->assertDatabaseHas('pedidos', ['usuario_id' => $user->id, 'total' => 215]);
+    $this->assertDatabaseHas('pedidos', ['usuario_id' => $user->id, 'total' => 200]);
     $this->assertDatabaseHas('pedido_itens', [
         'produto_id' => $product->id,
         'quantidade' => 2,

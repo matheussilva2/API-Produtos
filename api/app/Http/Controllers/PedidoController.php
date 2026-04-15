@@ -8,7 +8,6 @@ use App\Http\Requests\PedidoUpdateStatusRequest;
 use App\Models\Pedido;
 use App\Models\PedidoItem;
 use App\Models\Produto;
-use App\Services\ShippingService;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -86,7 +85,6 @@ class PedidoController extends Controller
         return DB::transaction(function () use($request){
             $user = Auth::user();
             $totalOrder = 0;
-            $shippingValue = ShippingService::calculate($request->estado_entrega);
 
             $order = Pedido::create([
                 'usuario_id' => $user->id,
@@ -95,7 +93,6 @@ class PedidoController extends Controller
                 'cidade_entrega' => $request->cidade_entrega,
                 'estado_entrega' => $request->estado_entrega,
                 'cep_entrega' => $request->cep_entrega,
-                'valor_frete' => $shippingValue,
                 'total' => 0
             ]);
 
@@ -121,7 +118,7 @@ class PedidoController extends Controller
             }
 
             $order->update([
-                'total' => $totalOrder + $shippingValue
+                'total' => $totalOrder
             ]);
 
             return response()->json([
