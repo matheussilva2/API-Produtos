@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\OrderStatus;
 use App\Http\Requests\PedidoIndexRequest;
 use App\Http\Requests\PedidoStoreRequest;
 use App\Http\Requests\PedidoUpdateStatusRequest;
@@ -88,7 +89,7 @@ class PedidoController extends Controller
 
             $order = Pedido::create([
                 'usuario_id' => $user->id,
-                'status' => 'CRIADO',
+                'status' => OrderStatus::CRIADO,
                 'logradouro_entrega' => $request->logradouro_entrega,
                 'cidade_entrega' => $request->cidade_entrega,
                 'estado_entrega' => $request->estado_entrega,
@@ -128,23 +129,23 @@ class PedidoController extends Controller
         });
     }
 
-    public function update(PedidoUpdateStatusRequest $response, string $id) {
+    public function update(PedidoUpdateStatusRequest $request, string $id) {
         $order = Pedido::find($id);
 
         if(!$order)
             return response()->json([
                 'message' => 'Pedido não encontrado.'
             ], Response::HTTP_NOT_FOUND);
-
-        if(in_array($order->status, ['PAGO', 'CANCELADO'])) {
+        
+        if(in_array($order->status, [OrderStatus::PAGO->value, OrderStatus::CANCELADO->value])) {
             return response()->json([
                 'message' => "O status do pedido está como {$order->status} e não pode ser alterado."
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $order->update([
-            'status' => $response->status
-        ]);
+        $statusEnum = OrderStatus::from($request->status);
+
+        $order->changeStatus($statusEnum);
 
         return response()->json([
             'message' => 'Status do pedido atualizado com sucesso.',

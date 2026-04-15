@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\OrderStatus;
 use App\Models\Pedido;
 use App\Models\PedidoItem;
 use App\Models\Produto;
@@ -30,7 +31,7 @@ class PedidoItemSeeder extends Seeder
             for($i=0; $i < 2; $i++) {
                 $order = Pedido::create([
                     'usuario_id' => $user->id,
-                    'status' => 'CRIADO',
+                    'status' => OrderStatus::CRIADO,
                     'logradouro_entrega' => 'Avenida Teste, ' . rand(1,100),
                     'cidade_entrega' => 'Maceió',
                     'estado_entrega' => 'AL',

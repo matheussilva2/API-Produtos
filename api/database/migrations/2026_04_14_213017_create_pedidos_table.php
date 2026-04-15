@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\OrderStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('usuario_id')->constrained('usuarios');
             $table->index('usuario_id', 'pedidos_usuario_id_index');
-            $table->enum('status', ['CRIADO', 'PAGO', 'CANCELADO'])->default('CRIADO');
+            $table->enum('status', OrderStatus::values())->default(OrderStatus::CRIADO);
             
             $table->string('logradouro_entrega');
             $table->string('cidade_entrega');

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\OrderStatus;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -24,7 +25,7 @@ class PedidoIndexRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => ['nullable', Rule::in(['CRIADO', 'PAGO', 'CANCELADO']),],
+            'status' => ['nullable', Rule::in(OrderStatus::values()),],
             'cidade_entrega' => 'nullable|string',
             'estado_entrega' => 'nullable|string',
             'per_page' => 'nullable|integer|min:1|max:100',

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\OrderStatus;
 use App\Models\Pedido;
 use App\Models\Usuario;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -21,7 +22,7 @@ class PedidoFactory extends Factory
         return [
             'usuario_id' => Usuario::factory()->create(),
             
-            'status' => fake()->randomElement(['CRIADO', 'PAGO', 'CANCELADO']),
+            'status' => fake()->randomElement(OrderStatus::values()),
             
             'logradouro_entrega' => fake()->streetAddress() . ', 22',
             'cidade_entrega' => fake()->city(),
