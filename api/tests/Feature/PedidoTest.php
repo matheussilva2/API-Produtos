@@ -2,6 +2,7 @@
 
 use App\Enums\OrderStatus;
 use App\Models\Pedido;
+use App\Models\Produto;
 use App\Models\Usuario;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Response;
@@ -84,4 +85,23 @@ test('Sucesso ao alterar status do produto de CRIADO para PAGO', function() {
         ->assertJsonPath('message', "Status do pedido atualizado com sucesso.");
 
     $this->assertEquals(OrderStatus::PAGO->value, $order->fresh()->status);
+});
+
+test('Devolução do estoque com sucesso quando o pedido for cancelado', function() {
+    $product = Produto::factory()->create(['estoque' => 10]);
+    $order = Pedido::factory()->create(['status' => OrderStatus::CRIADO]);
+
+    $order->items()->create([
+        'produto_id' => $product->id,
+        'quantidade' => 3,
+        'preco_unitario' => 50,
+        'sub_total' => 150
+    ]);
+
+    $product->update(['estoque' => 7]);
+
+    $order->cancel();
+
+    expect($product->fresh()->estoque)->toBe(10);
+    expect($order->fresh()->status)->toBe(OrderStatus::CANCELADO->value);
 });
