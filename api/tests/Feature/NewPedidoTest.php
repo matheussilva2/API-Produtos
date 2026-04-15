@@ -27,7 +27,7 @@ test('Realizar pedido com sucesso e reduzir estoque', function() {
         ]
     ];
 
-    $response = $this->actingAs($user, 'sanctum')->postJson('/api/pedidos/novo', $payload);
+    $response = $this->actingAs($user, 'sanctum')->postJson('/api/pedidos', $payload);
     $response->assertStatus(Response::HTTP_CREATED);
     $response->assertJsonPath('message', 'Pedido realizado com sucesso!');
 
@@ -55,7 +55,7 @@ test('Rollback aconteceu quando estoque foi insuficiente', function() {
     ];
 
     $response = $this->actingAs($user, 'sanctum')
-        ->postJson('/api/pedidos/novo', $payload);
+        ->postJson('/api/pedidos', $payload);
     
     $response->assertStatus(Response::HTTP_INTERNAL_SERVER_ERROR);
 
