@@ -6,12 +6,9 @@ use App\Http\Requests\ProdutoIndexRequest;
 use App\Http\Requests\ProdutoStoreRequest;
 use App\Http\Requests\ProdutoUpdateRequest;
 use App\Models\Produto;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-
-use function PHPUnit\Framework\isNumeric;
 
 class ProdutoController extends Controller
 {
