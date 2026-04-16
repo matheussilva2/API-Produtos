@@ -230,3 +230,23 @@ test('Atualização de produto com sucesso', function() {
 
     $response->assertJsonPath('data.nome', 'Produto Atualizado');
 });
+
+test('Desativação de produto com sucesso', function() {
+    $admin = Usuario::factory()->create([
+        'tipo' => 'admin'
+    ]);
+        
+    $this->actingAs($admin, 'sanctum');
+    $product = Produto::factory()->create([
+        'criado_por' => $admin->id,
+        'ativo' => '0'
+    ]);
+
+    $response = $this->withToken($admin)->putJson("/api/produtos/{$product->id}", [
+        'ativo' => false
+    ]);
+
+    $response->assertStatus(200);
+
+    $response->assertJsonPath('data.ativo', false);
+});
