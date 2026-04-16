@@ -1,0 +1,48 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api_produtos
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    environment:
+      APP_ENV: local
+      APP_DEBUG: true
+    volumes:
+      - .:/var/www
+      - ./docker/nginx.conf:/etc/nginx/sites-available/default
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - laravel
+
+  mysql:
+    image: mysql:8.0
+    container_name: api_produtos_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-apiprodutos}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root}
+      MYSQL_USER: ${DB_USERNAME:-laravel}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-laravelroot}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - laravel
+
+volumes:
+  mysql_data:
+
+networks:
+  laravel:
+    driver: bridge
