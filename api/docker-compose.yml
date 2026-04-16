@@ -12,6 +12,7 @@ services:
       APP_DEBUG: true
     volumes:
       - .:/var/www
+      - /var/www/vendor
       - ./docker/nginx.conf:/etc/nginx/sites-available/default
     depends_on:
       mysql:
