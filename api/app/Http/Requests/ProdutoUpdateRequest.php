@@ -54,7 +54,9 @@ class ProdutoUpdateRequest extends FormRequest
             'estoque.integer' => 'O estoque do produto precisa ser um número inteiro.',
             
             'imagem.max' => 'A imagem não pode ter mais do que 2MB',
-            'imagem.mimes' => 'O formato da imagem deve ser JPG, JPEG, PNG ou WEBP.'
+            'imagem.mimes' => 'O formato da imagem deve ser JPG, JPEG, PNG ou WEBP.',
+
+            'ativo.boolean' => 'O campo "ativo" deve ser boolean (1 ou 0)'
         ];
     }
 }

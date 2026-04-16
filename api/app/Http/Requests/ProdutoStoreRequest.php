@@ -52,7 +52,9 @@ class ProdutoStoreRequest extends FormRequest
 
             'preco.required' => 'O preço do produto é obrigatório',
             'preco.numeric' => 'O preço do produto tem que ser um número.',
-            'preco.min' => 'O preço do produto não pode ser menor do que zero.'
+            'preco.min' => 'O preço do produto não pode ser menor do que zero.',
+
+            'ativo.boolean' => 'O campo "ativo" deve ser boolean (1 ou 0)'
         ];
     }
 }
