@@ -25,7 +25,7 @@ services:
     container_name: app_mysql
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: ${DB_DATABASE:-apiprodutos}
+      MYSQL_DATABASE: ${DB_DATABASE:-api_produtos}
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root}
       MYSQL_USER: ${DB_USERNAME:-laravel}
       MYSQL_PASSWORD: ${DB_PASSWORD:-laravelroot}
