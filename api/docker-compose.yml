@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: api_produtos
+    container_name: app
     restart: unless-stopped
     ports:
       - "8000:80"
@@ -22,7 +22,7 @@ services:
 
   mysql:
     image: mysql:8.0
-    container_name: api_produtos_mysql
+    container_name: app_mysql
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: ${DB_DATABASE:-apiprodutos}
